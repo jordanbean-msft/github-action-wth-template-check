@@ -1,7 +1,88 @@
-require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
+/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 351:
+/***/ 338:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const path = __nccwpck_require__(17)
+const fs = __nccwpck_require__(147)
+
+const getAllDirectories = (dirPath, arrayOfDirectories) => {
+  files = fs.readdirSync(dirPath);
+
+  arrayOfDirectories = arrayOfDirectories || [];
+
+  files.forEach((file) => {
+    if (fs.statSync(dirPath + "/" + file).isDirectory()) {
+      arrayOfDirectories.push(path.join(dirPath, "/", file));
+      arrayOfDirectories = getAllDirectories(dirPath + "/" + file, arrayOfDirectories);
+    }
+  });
+
+  return arrayOfDirectories;
+}
+
+const checkIfDirectoryExistsInRootDirectory = (inputPath, directoryName) => {
+  files = fs.readdirSync(inputPath, { withFileTypes: true });
+
+  return files.some((file) => {
+    if(file.isDirectory && file.name == directoryName) {
+      return true;
+    }
+  });
+}
+
+const checkIfContainsChildDirectoryInParentDirectory = (inputPath, parentDirectoryName, childDirectoryName) => {
+  arrayOfDirectories = [];
+  files = getAllDirectories(inputPath, arrayOfDirectories);
+
+  return files.some((file) => {
+    if(fs.statSync(file).isDirectory()) {
+      elements = file.split(path.sep)
+
+      if(elements.length < 2) {
+        throw new Error('Number of path {file} splits cannot be less than 2.');
+      }
+
+      if(elements[elements.length - 2] == parentDirectoryName && elements[elements.length - 1] == childDirectoryName) {
+        return true;
+      }
+    }
+  });
+}
+
+module.exports = {
+checkIfContainsReadmeInRootDirectory: (inputPath) => {
+  files = fs.readdirSync(inputPath, { withFileTypes: true });
+
+  return files.some((file) => {
+    if(file.isFile && file.name == 'README.md') {
+      return true;
+    }
+  });
+},
+
+checkIfContainsCoachInRootDirectory: (inputPath) => {
+  return checkIfDirectoryExistsInRootDirectory(inputPath, 'Coach')
+},
+
+checkIfContainsStudentInRootDirectory: (inputPath) => {
+  return checkIfDirectoryExistsInRootDirectory(inputPath, 'Student')
+},
+
+checkIfContainsSolutionsInCoachDirectory: (inputPath) => {
+  return checkIfContainsChildDirectoryInParentDirectory(inputPath, 'Coach', 'Solutions')
+},
+
+checkIfContainsResourcesInStudentDirectory: (inputPath) => {
+  return checkIfContainsChildDirectoryInParentDirectory(inputPath, 'Student', 'Resources')
+},
+}
+
+
+/***/ }),
+
+/***/ 140:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -27,8 +108,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.issue = exports.issueCommand = void 0;
-const os = __importStar(__nccwpck_require__(87));
-const utils_1 = __nccwpck_require__(278);
+const os = __importStar(__nccwpck_require__(37));
+const utils_1 = __nccwpck_require__(596);
 /**
  * Commands
  *
@@ -100,7 +181,7 @@ function escapeProperty(s) {
 
 /***/ }),
 
-/***/ 186:
+/***/ 722:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -135,12 +216,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
-const command_1 = __nccwpck_require__(351);
-const file_command_1 = __nccwpck_require__(717);
-const utils_1 = __nccwpck_require__(278);
-const os = __importStar(__nccwpck_require__(87));
-const path = __importStar(__nccwpck_require__(622));
-const oidc_utils_1 = __nccwpck_require__(41);
+const command_1 = __nccwpck_require__(140);
+const file_command_1 = __nccwpck_require__(197);
+const utils_1 = __nccwpck_require__(596);
+const os = __importStar(__nccwpck_require__(37));
+const path = __importStar(__nccwpck_require__(17));
+const oidc_utils_1 = __nccwpck_require__(395);
 /**
  * The code to exit an action
  */
@@ -419,7 +500,7 @@ exports.getIDToken = getIDToken;
 
 /***/ }),
 
-/***/ 717:
+/***/ 197:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -448,9 +529,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.issueCommand = void 0;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const fs = __importStar(__nccwpck_require__(747));
-const os = __importStar(__nccwpck_require__(87));
-const utils_1 = __nccwpck_require__(278);
+const fs = __importStar(__nccwpck_require__(147));
+const os = __importStar(__nccwpck_require__(37));
+const utils_1 = __nccwpck_require__(596);
 function issueCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
@@ -468,7 +549,7 @@ exports.issueCommand = issueCommand;
 
 /***/ }),
 
-/***/ 41:
+/***/ 395:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -484,9 +565,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OidcClient = void 0;
-const http_client_1 = __nccwpck_require__(925);
-const auth_1 = __nccwpck_require__(702);
-const core_1 = __nccwpck_require__(186);
+const http_client_1 = __nccwpck_require__(851);
+const auth_1 = __nccwpck_require__(417);
+const core_1 = __nccwpck_require__(722);
 class OidcClient {
     static createHttpClient(allowRetry = true, maxRetry = 10) {
         const requestOptions = {
@@ -552,7 +633,7 @@ exports.OidcClient = OidcClient;
 
 /***/ }),
 
-/***/ 278:
+/***/ 596:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -599,7 +680,7 @@ exports.toCommandProperties = toCommandProperties;
 
 /***/ }),
 
-/***/ 702:
+/***/ 417:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -665,15 +746,15 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 
 /***/ }),
 
-/***/ 925:
+/***/ 851:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const http = __nccwpck_require__(605);
-const https = __nccwpck_require__(211);
-const pm = __nccwpck_require__(443);
+const http = __nccwpck_require__(685);
+const https = __nccwpck_require__(687);
+const pm = __nccwpck_require__(410);
 let tunnel;
 var HttpCodes;
 (function (HttpCodes) {
@@ -1092,7 +1173,7 @@ class HttpClient {
         if (useProxy) {
             // If using proxy, need tunnel
             if (!tunnel) {
-                tunnel = __nccwpck_require__(294);
+                tunnel = __nccwpck_require__(866);
             }
             const agentOptions = {
                 maxSockets: maxSockets,
@@ -1210,7 +1291,7 @@ exports.HttpClient = HttpClient;
 
 /***/ }),
 
-/***/ 443:
+/***/ 410:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -1275,27 +1356,27 @@ exports.checkBypass = checkBypass;
 
 /***/ }),
 
-/***/ 294:
+/***/ 866:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-module.exports = __nccwpck_require__(219);
+module.exports = __nccwpck_require__(113);
 
 
 /***/ }),
 
-/***/ 219:
+/***/ 113:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var net = __nccwpck_require__(631);
-var tls = __nccwpck_require__(16);
-var http = __nccwpck_require__(605);
-var https = __nccwpck_require__(211);
-var events = __nccwpck_require__(614);
-var assert = __nccwpck_require__(357);
-var util = __nccwpck_require__(669);
+var net = __nccwpck_require__(808);
+var tls = __nccwpck_require__(404);
+var http = __nccwpck_require__(685);
+var https = __nccwpck_require__(687);
+var events = __nccwpck_require__(361);
+var assert = __nccwpck_require__(491);
+var util = __nccwpck_require__(837);
 
 
 exports.httpOverHttp = httpOverHttp;
@@ -1555,24 +1636,7 @@ exports.debug = debug; // for test
 
 /***/ }),
 
-/***/ 258:
-/***/ ((module) => {
-
-let wait = function (milliseconds) {
-  return new Promise((resolve) => {
-    if (typeof milliseconds !== 'number') {
-      throw new Error('milliseconds not a number');
-    }
-    setTimeout(() => resolve("done!"), milliseconds)
-  });
-};
-
-module.exports = wait;
-
-
-/***/ }),
-
-/***/ 357:
+/***/ 491:
 /***/ ((module) => {
 
 "use strict";
@@ -1580,7 +1644,7 @@ module.exports = require("assert");
 
 /***/ }),
 
-/***/ 614:
+/***/ 361:
 /***/ ((module) => {
 
 "use strict";
@@ -1588,7 +1652,7 @@ module.exports = require("events");
 
 /***/ }),
 
-/***/ 747:
+/***/ 147:
 /***/ ((module) => {
 
 "use strict";
@@ -1596,7 +1660,7 @@ module.exports = require("fs");
 
 /***/ }),
 
-/***/ 605:
+/***/ 685:
 /***/ ((module) => {
 
 "use strict";
@@ -1604,7 +1668,7 @@ module.exports = require("http");
 
 /***/ }),
 
-/***/ 211:
+/***/ 687:
 /***/ ((module) => {
 
 "use strict";
@@ -1612,7 +1676,7 @@ module.exports = require("https");
 
 /***/ }),
 
-/***/ 631:
+/***/ 808:
 /***/ ((module) => {
 
 "use strict";
@@ -1620,7 +1684,7 @@ module.exports = require("net");
 
 /***/ }),
 
-/***/ 87:
+/***/ 37:
 /***/ ((module) => {
 
 "use strict";
@@ -1628,7 +1692,7 @@ module.exports = require("os");
 
 /***/ }),
 
-/***/ 622:
+/***/ 17:
 /***/ ((module) => {
 
 "use strict";
@@ -1636,7 +1700,7 @@ module.exports = require("path");
 
 /***/ }),
 
-/***/ 16:
+/***/ 404:
 /***/ ((module) => {
 
 "use strict";
@@ -1644,7 +1708,7 @@ module.exports = require("tls");
 
 /***/ }),
 
-/***/ 669:
+/***/ 837:
 /***/ ((module) => {
 
 "use strict";
@@ -1693,21 +1757,64 @@ module.exports = require("util");
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-const core = __nccwpck_require__(186);
-const wait = __nccwpck_require__(258);
+const core = __nccwpck_require__(722);
+const {
+  checkIfContainsReadmeInRootDirectory,
+  checkIfContainsCoachInRootDirectory,
+  checkIfContainsStudentInRootDirectory,
+  checkIfContainsSolutionsInCoachDirectory,
+  checkIfContainsResourcesInStudentDirectory
+} = __nccwpck_require__(338);
 
-
-// most @actions toolkit packages have async methods
-async function run() {
+let run = async () => {
   try {
-    const ms = core.getInput('milliseconds');
-    core.info(`Waiting ${ms} milliseconds ...`);
+    const inputPath = core.getInput('inputPath');
 
-    core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    await wait(parseInt(ms));
-    core.info((new Date()).toTimeString());
+    //store each check function & the appropriate error message
+    const testFunctions = [
+      {
+        function: () => checkIfContainsReadmeInRootDirectory(inputPath),
+        errorMessage: 'Does not contain a README.md file in the root directory.'
+      },
+      {
+        function: () => checkIfContainsCoachInRootDirectory(inputPath),
+        errorMessage: 'Does not contain a Coach directory in the root directory.'
+      },
+      {
+        function: () => checkIfContainsStudentInRootDirectory(inputPath),
+        errorMessage: 'Does not contain a Student directory in the root directory.'
+      },
+      {
+        function: () => checkIfContainsSolutionsInCoachDirectory(inputPath),
+        errorMessage: 'Does not contain a Solutions directory in the Coach directory.'
+      },
+      {
+        function: () => checkIfContainsResourcesInStudentDirectory(inputPath),
+        errorMessage: 'Does not contain a Resources directory in the Student directory.'
+      }
+    ];
 
-    core.setOutput('time', new Date().toTimeString());
+    //execute all check functions and store results
+    const results = testFunctions.map(x => (
+      {
+        result: x.function(),
+        errorMessage: x.errorMessage
+      }
+    ));
+
+    //if any of the results are false
+    if (results.some(x => !x.result)) {
+      const errorMessage = 'Not all conditions satisfied'
+      console.log(errorMessage);
+      core.setFailed(errorMessage);
+
+      //print the output for each failed check
+      results.forEach(x => {
+        if (!x.result) {
+          console.log(x.errorMessage);
+        }
+      })
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -1720,4 +1827,3 @@ run();
 module.exports = __webpack_exports__;
 /******/ })()
 ;
-//# sourceMappingURL=index.js.map
