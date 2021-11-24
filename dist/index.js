@@ -1,13 +1,57 @@
-require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
+/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 673:
+/***/ 123:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const path = __nccwpck_require__(17)
-const fs = __nccwpck_require__(147)
-const core = __nccwpck_require__(186);
-const markdownLinkExtractor = __nccwpck_require__(264)
+const path = __nccwpck_require__(17);
+const fs = __nccwpck_require__(147);
+
+const getAllDirectories = (dirPath, arrayOfDirectories) => {
+  const files = fs.readdirSync(dirPath);
+
+  arrayOfDirectories = arrayOfDirectories || [];
+
+  files.forEach((file) => {
+    if (fs.statSync(dirPath + "/" + file).isDirectory()) {
+      arrayOfDirectories.push(path.join(dirPath, "/", file));
+      arrayOfDirectories = getAllDirectories(dirPath + "/" + file, arrayOfDirectories);
+    }
+  });
+
+  return arrayOfDirectories;
+};
+
+module.exports = {
+  checkIfContainsChildDirectoryInParentDirectory: (inputPath, parentDirectoryName, childDirectoryName) => {
+    let arrayOfDirectories = [];
+    const files = getAllDirectories(inputPath, arrayOfDirectories);
+
+    return files.some((file) => {
+      if(fs.statSync(file).isDirectory()) {
+        const elements = file.split(path.sep)
+
+        if(elements.length < 2) {
+          throw new Error(`Number of path ${file} splits cannot be less than 2.`);
+        }
+
+        if(elements[elements.length - 2] == parentDirectoryName && elements[elements.length - 1] == childDirectoryName) {
+          return true;
+        }
+      }
+    });
+  }
+}
+
+/***/ }),
+
+/***/ 831:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const path = __nccwpck_require__(17);
+const fs = __nccwpck_require__(147);
+const core = __nccwpck_require__(722);
+const markdownLinkExtractor = __nccwpck_require__(942);
 
 const getAllFilePathsWithExtension = (dirPath, extension, arrayOfFilePaths) => {
   const files = fs.readdirSync(dirPath);
@@ -28,131 +72,133 @@ const getAllFilePathsWithExtension = (dirPath, extension, arrayOfFilePaths) => {
   return arrayOfFilePaths;
 };
 
-const getAllDirectories = (dirPath, arrayOfDirectories) => {
-  const files = fs.readdirSync(dirPath);
+module.exports = {
+  checkIfLhsPagesDoNotContainReferencesToRhsPages: (inputPath, lhsPageDirectory, rhsPageDirectory) => {
+    const markdownFilePaths = getAllFilePathsWithExtension(inputPath, 'md');
+    const lhsPageDirectoryPath = path.join(inputPath, lhsPageDirectory);
 
-  arrayOfDirectories = arrayOfDirectories || [];
+    //get all file paths under the lhs directory
+    const lhsPageFilePaths = markdownFilePaths.filter(file => RegExp(`^${lhsPageDirectoryPath}`).test(file));
 
-  files.forEach((file) => {
-    if (fs.statSync(dirPath + "/" + file).isDirectory()) {
-      arrayOfDirectories.push(path.join(dirPath, "/", file));
-      arrayOfDirectories = getAllDirectories(dirPath + "/" + file, arrayOfDirectories);
-    }
-  });
+    const pagesWithReferencesToRhsDirectory = []
 
-  return arrayOfDirectories;
-};
+    lhsPageFilePaths.forEach(filePath => {
+      const fileContent = fs.readFileSync(filePath, {encoding: 'utf-8'});
 
-const checkIfDirectoryExistsInRootDirectory = (inputPath, directoryName) => {
-  const files = fs.readdirSync(inputPath, { withFileTypes: true });
+      const links = markdownLinkExtractor(fileContent, true);
 
-  return files.some((file) => {
-    if(file.isDirectory && file.name == directoryName) {
+      //check to see if there are any references to the rhs directory (ex. ../Coach/Solution-00.md)
+      const linksWithReferencesToRhsPages = links.filter(link => RegExp(`.{2}/${rhsPageDirectory}/`).test(link.href));
+
+      if(linksWithReferencesToRhsPages.length > 0) {
+        pagesWithReferencesToRhsDirectory.push({
+          filePath: filePath,
+          links: linksWithReferencesToRhsPages
+        });
+      }
+    });
+
+    if(pagesWithReferencesToRhsDirectory.length > 0) {
+      pagesWithReferencesToRhsDirectory.forEach(page => {
+        core.error(`The following Student page contains a reference to the Coach directory: ${page.filePath}`);
+        page.links.forEach(link => {
+          core.error(`  ${link.raw}`)
+        });
+      });
+      return false;
+    } else {
       return true;
     }
-  });
-};
-
-const checkIfContainsChildDirectoryInParentDirectory = (inputPath, parentDirectoryName, childDirectoryName) => {
-  let arrayOfDirectories = [];
-  const files = getAllDirectories(inputPath, arrayOfDirectories);
-
-  return files.some((file) => {
-    if(fs.statSync(file).isDirectory()) {
-      const elements = file.split(path.sep)
-
-      if(elements.length < 2) {
-        throw new Error(`Number of path ${file} splits cannot be less than 2.`);
-      }
-
-      if(elements[elements.length - 2] == parentDirectoryName && elements[elements.length - 1] == childDirectoryName) {
-        return true;
-      }
-    }
-  });
-};
-
-const checkIfLhsPagesDoNotContainReferencesToRhsPages = (inputPath, lhsPageDirectory, rhsPageDirectory) => {
-  const markdownFilePaths = getAllFilePathsWithExtension(inputPath, 'md');
-  const lhsPageDirectoryPath = path.join(inputPath, lhsPageDirectory);
-
-  //get all file paths under the lhs directory
-  const lhsPageFilePaths = markdownFilePaths.filter(file => RegExp(`^${lhsPageDirectoryPath}`).test(file));
-
-  const pagesWithReferencesToRhsDirectory = []
-
-  lhsPageFilePaths.forEach(filePath => {
-    const fileContent = fs.readFileSync(filePath, {encoding: 'utf-8'});
-
-    const links = markdownLinkExtractor(fileContent, true);
-
-    //check to see if there are any references to the rhs directory (ex. ../Coach/Solution-00.md)
-    const linksWithReferencesToRhsPages = links.filter(link => RegExp(`.{2}/${rhsPageDirectory}/`).test(link.href));
-
-    if(linksWithReferencesToRhsPages.length > 0) {
-      pagesWithReferencesToRhsDirectory.push({
-        filePath: filePath,
-        links: linksWithReferencesToRhsPages
-      });
-    }
-  });
-
-  if(pagesWithReferencesToRhsDirectory.length > 0) {
-    pagesWithReferencesToRhsDirectory.forEach(page => {
-      core.error(`The following Student page contains a reference to the Coach directory: ${page.filePath}`);
-      page.links.forEach(link => {
-        core.error(`  ${link.raw}`)
-      });
-    });
-    return false;
-  } else {
-    return true;
   }
-};
+}
+
+/***/ }),
+
+/***/ 338:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(722);
+const { 
+  checkIfDirectoryExistsInRootDirectory,
+  checkIfContainsReadmeInRootDirectory
+} = __nccwpck_require__(490);
+const {
+  checkIfContainsChildDirectoryInParentDirectory
+} = __nccwpck_require__(123);
+const {
+  checkIfLhsPagesDoNotContainReferencesToRhsPages
+} = __nccwpck_require__(831);
 
 module.exports = {
-checkIfContainsReadmeInRootDirectory: (inputPath) => {
-  core.info(`Checking to see if README.md is in root of directory ${inputPath} ...`)
-  
-  const files = fs.readdirSync(inputPath, { withFileTypes: true });
+  checkIfContainsReadmeInRootDirectory: (inputPath) => {
+    core.info(`Checking to see if README.md is in root of directory ${inputPath} ...`);
+    
+    return checkIfContainsReadmeInRootDirectory(inputPath);
+  },
 
-  return files.some((file) => {
-    if(file.isFile && file.name == 'README.md') {
-      return true;
-    }
-  });
-},
+  checkIfContainsCoachInRootDirectory: (inputPath) => {
+    core.info(`Checking to see if Coach directory in in root of directory ${inputPath} ...`);
+    return checkIfDirectoryExistsInRootDirectory(inputPath, 'Coach');
+  },
 
-checkIfContainsCoachInRootDirectory: (inputPath) => {
-  core.info(`Checking to see if Coach directory in in root of directory ${inputPath} ...`) ;
-  return checkIfDirectoryExistsInRootDirectory(inputPath, 'Coach');
-},
+  checkIfContainsStudentInRootDirectory: (inputPath) => {
+    core.info(`Checking to see if Student directory is in root of directory ${inputPath} ...`);
+    return checkIfDirectoryExistsInRootDirectory(inputPath, 'Student');
+  },
 
-checkIfContainsStudentInRootDirectory: (inputPath) => {
-  core.info(`Checking to see if Student directory is in root of directory ${inputPath} ...`);
-  return checkIfDirectoryExistsInRootDirectory(inputPath, 'Student');
-},
+  checkIfContainsSolutionsInCoachDirectory: (inputPath) => {
+    core.info(`Checking to see if Solutions directory is in Coach directory of ${inputPath} ...`);
+    return checkIfContainsChildDirectoryInParentDirectory(inputPath, 'Coach', 'Solutions');
+  },
 
-checkIfContainsSolutionsInCoachDirectory: (inputPath) => {
-  core.info(`Checking to see if Solutions directory is in Coach directory of ${inputPath} ...`);
-  return checkIfContainsChildDirectoryInParentDirectory(inputPath, 'Coach', 'Solutions');
-},
+  checkIfContainsResourcesInStudentDirectory: (inputPath) => {
+    core.info(`Checking to see if Resources directory is in Student directory of ${inputPath} ...`);
+    return checkIfContainsChildDirectoryInParentDirectory(inputPath, 'Student', 'Resources');
+  },
 
-checkIfContainsResourcesInStudentDirectory: (inputPath) => {
-  core.info(`Checking to see if Resources directory is in Student directory of ${inputPath} ...`);
-  return checkIfContainsChildDirectoryInParentDirectory(inputPath, 'Student', 'Resources');
-},
-
-checkIfStudentPagesDoNotContainReferencesToCoachesPages: (inputPath) => {
-  core.info(`Checking to see if any Student pages link to any Coach pages in ${inputPath} ...`);
-  return checkIfLhsPagesDoNotContainReferencesToRhsPages(inputPath, 'Student', 'Coach');
-}
+  checkIfStudentPagesDoNotContainReferencesToCoachesPages: (inputPath) => {
+    core.info(`Checking to see if any Student pages link to any Coach pages in ${inputPath} ...`);
+    return checkIfLhsPagesDoNotContainReferencesToRhsPages(inputPath, 'Student', 'Coach');
+  }
 }
 
 
 /***/ }),
 
-/***/ 351:
+/***/ 490:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const fs = __nccwpck_require__(147);
+const core = __nccwpck_require__(722);
+
+module.exports = {
+  checkIfDirectoryExistsInRootDirectory: (inputPath, directoryName) => {
+    const files = fs.readdirSync(inputPath, { withFileTypes: true });
+
+    return files.some((file) => {
+      if(file.isDirectory && file.name == directoryName) {
+        return true;
+      }
+    });
+  },
+
+  checkIfContainsReadmeInRootDirectory: (inputPath) => {
+    core.info(`Checking to see if README.md is in root of directory ${inputPath} ...`)
+    
+    const files = fs.readdirSync(inputPath, { withFileTypes: true });
+
+    return files.some((file) => {
+      if(file.isFile && file.name == 'README.md') {
+        return true;
+      }
+    });
+  }
+}
+
+
+/***/ }),
+
+/***/ 140:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -179,7 +225,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.issue = exports.issueCommand = void 0;
 const os = __importStar(__nccwpck_require__(37));
-const utils_1 = __nccwpck_require__(278);
+const utils_1 = __nccwpck_require__(596);
 /**
  * Commands
  *
@@ -251,7 +297,7 @@ function escapeProperty(s) {
 
 /***/ }),
 
-/***/ 186:
+/***/ 722:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -286,12 +332,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
-const command_1 = __nccwpck_require__(351);
-const file_command_1 = __nccwpck_require__(717);
-const utils_1 = __nccwpck_require__(278);
+const command_1 = __nccwpck_require__(140);
+const file_command_1 = __nccwpck_require__(197);
+const utils_1 = __nccwpck_require__(596);
 const os = __importStar(__nccwpck_require__(37));
 const path = __importStar(__nccwpck_require__(17));
-const oidc_utils_1 = __nccwpck_require__(41);
+const oidc_utils_1 = __nccwpck_require__(395);
 /**
  * The code to exit an action
  */
@@ -570,7 +616,7 @@ exports.getIDToken = getIDToken;
 
 /***/ }),
 
-/***/ 717:
+/***/ 197:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -601,7 +647,7 @@ exports.issueCommand = void 0;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const fs = __importStar(__nccwpck_require__(147));
 const os = __importStar(__nccwpck_require__(37));
-const utils_1 = __nccwpck_require__(278);
+const utils_1 = __nccwpck_require__(596);
 function issueCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
@@ -619,7 +665,7 @@ exports.issueCommand = issueCommand;
 
 /***/ }),
 
-/***/ 41:
+/***/ 395:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -635,9 +681,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OidcClient = void 0;
-const http_client_1 = __nccwpck_require__(925);
-const auth_1 = __nccwpck_require__(702);
-const core_1 = __nccwpck_require__(186);
+const http_client_1 = __nccwpck_require__(851);
+const auth_1 = __nccwpck_require__(417);
+const core_1 = __nccwpck_require__(722);
 class OidcClient {
     static createHttpClient(allowRetry = true, maxRetry = 10) {
         const requestOptions = {
@@ -703,7 +749,7 @@ exports.OidcClient = OidcClient;
 
 /***/ }),
 
-/***/ 278:
+/***/ 596:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -750,7 +796,7 @@ exports.toCommandProperties = toCommandProperties;
 
 /***/ }),
 
-/***/ 702:
+/***/ 417:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -816,7 +862,7 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 
 /***/ }),
 
-/***/ 925:
+/***/ 851:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -824,7 +870,7 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const http = __nccwpck_require__(685);
 const https = __nccwpck_require__(687);
-const pm = __nccwpck_require__(443);
+const pm = __nccwpck_require__(410);
 let tunnel;
 var HttpCodes;
 (function (HttpCodes) {
@@ -1243,7 +1289,7 @@ class HttpClient {
         if (useProxy) {
             // If using proxy, need tunnel
             if (!tunnel) {
-                tunnel = __nccwpck_require__(294);
+                tunnel = __nccwpck_require__(866);
             }
             const agentOptions = {
                 maxSockets: maxSockets,
@@ -1361,7 +1407,7 @@ exports.HttpClient = HttpClient;
 
 /***/ }),
 
-/***/ 443:
+/***/ 410:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -1426,13 +1472,13 @@ exports.checkBypass = checkBypass;
 
 /***/ }),
 
-/***/ 264:
+/***/ 942:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-const marked = __nccwpck_require__(223);
+const marked = __nccwpck_require__(984);
 
 module.exports = function markdownLinkExtractor(markdown, extended = false) {
     const links = [];
@@ -1475,13 +1521,13 @@ module.exports = function markdownLinkExtractor(markdown, extended = false) {
 
 /***/ }),
 
-/***/ 354:
+/***/ 265:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const Tokenizer = __nccwpck_require__(721);
-const { defaults } = __nccwpck_require__(863);
-const { block, inline } = __nccwpck_require__(770);
-const { repeatString } = __nccwpck_require__(881);
+const Tokenizer = __nccwpck_require__(268);
+const { defaults } = __nccwpck_require__(377);
+const { block, inline } = __nccwpck_require__(461);
+const { repeatString } = __nccwpck_require__(695);
 
 /**
  * smartypants text replacement
@@ -2035,16 +2081,16 @@ module.exports = class Lexer {
 
 /***/ }),
 
-/***/ 887:
+/***/ 284:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const Renderer = __nccwpck_require__(547);
-const TextRenderer = __nccwpck_require__(381);
-const Slugger = __nccwpck_require__(439);
-const { defaults } = __nccwpck_require__(863);
+const Renderer = __nccwpck_require__(2);
+const TextRenderer = __nccwpck_require__(730);
+const Slugger = __nccwpck_require__(825);
+const { defaults } = __nccwpck_require__(377);
 const {
   unescape
-} = __nccwpck_require__(881);
+} = __nccwpck_require__(695);
 
 /**
  * Parsing & Compiling
@@ -2328,14 +2374,14 @@ module.exports = class Parser {
 
 /***/ }),
 
-/***/ 547:
+/***/ 2:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { defaults } = __nccwpck_require__(863);
+const { defaults } = __nccwpck_require__(377);
 const {
   cleanUrl,
   escape
-} = __nccwpck_require__(881);
+} = __nccwpck_require__(695);
 
 /**
  * Renderer
@@ -2501,7 +2547,7 @@ module.exports = class Renderer {
 
 /***/ }),
 
-/***/ 439:
+/***/ 825:
 /***/ ((module) => {
 
 /**
@@ -2557,7 +2603,7 @@ module.exports = class Slugger {
 
 /***/ }),
 
-/***/ 381:
+/***/ 730:
 /***/ ((module) => {
 
 /**
@@ -2606,16 +2652,16 @@ module.exports = class TextRenderer {
 
 /***/ }),
 
-/***/ 721:
+/***/ 268:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { defaults } = __nccwpck_require__(863);
+const { defaults } = __nccwpck_require__(377);
 const {
   rtrim,
   splitCells,
   escape,
   findClosingBracket
-} = __nccwpck_require__(881);
+} = __nccwpck_require__(695);
 
 function outputLink(cap, link, raw) {
   const href = link.href;
@@ -3344,7 +3390,7 @@ module.exports = class Tokenizer {
 
 /***/ }),
 
-/***/ 863:
+/***/ 377:
 /***/ ((module) => {
 
 function getDefaults() {
@@ -3384,7 +3430,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 881:
+/***/ 695:
 /***/ ((module) => {
 
 /**
@@ -3651,25 +3697,25 @@ module.exports = {
 
 /***/ }),
 
-/***/ 223:
+/***/ 984:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const Lexer = __nccwpck_require__(354);
-const Parser = __nccwpck_require__(887);
-const Tokenizer = __nccwpck_require__(721);
-const Renderer = __nccwpck_require__(547);
-const TextRenderer = __nccwpck_require__(381);
-const Slugger = __nccwpck_require__(439);
+const Lexer = __nccwpck_require__(265);
+const Parser = __nccwpck_require__(284);
+const Tokenizer = __nccwpck_require__(268);
+const Renderer = __nccwpck_require__(2);
+const TextRenderer = __nccwpck_require__(730);
+const Slugger = __nccwpck_require__(825);
 const {
   merge,
   checkSanitizeDeprecation,
   escape
-} = __nccwpck_require__(881);
+} = __nccwpck_require__(695);
 const {
   getDefaults,
   changeDefaults,
   defaults
-} = __nccwpck_require__(863);
+} = __nccwpck_require__(377);
 
 /**
  * Marked
@@ -4000,14 +4046,14 @@ module.exports = marked;
 
 /***/ }),
 
-/***/ 770:
+/***/ 461:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const {
   noopTest,
   edit,
   merge
-} = __nccwpck_require__(881);
+} = __nccwpck_require__(695);
 
 /**
  * Block-Level Grammar
@@ -4317,15 +4363,15 @@ module.exports = {
 
 /***/ }),
 
-/***/ 294:
+/***/ 866:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-module.exports = __nccwpck_require__(219);
+module.exports = __nccwpck_require__(113);
 
 
 /***/ }),
 
-/***/ 219:
+/***/ 113:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -4718,7 +4764,7 @@ module.exports = require("util");
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-const core = __nccwpck_require__(186);
+const core = __nccwpck_require__(722);
 const {
   checkIfContainsReadmeInRootDirectory,
   checkIfContainsCoachInRootDirectory,
@@ -4726,7 +4772,7 @@ const {
   checkIfContainsSolutionsInCoachDirectory,
   checkIfContainsResourcesInStudentDirectory,
   checkIfStudentPagesDoNotContainReferencesToCoachesPages
-} = __nccwpck_require__(673);
+} = __nccwpck_require__(338);
 
 let run = async () => {
   try {
@@ -4793,4 +4839,3 @@ run();
 module.exports = __webpack_exports__;
 /******/ })()
 ;
-//# sourceMappingURL=index.js.map
