@@ -1,7 +1,7 @@
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 123:
+/***/ 411:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const path = __nccwpck_require__(17);
@@ -45,13 +45,13 @@ module.exports = {
 
 /***/ }),
 
-/***/ 831:
+/***/ 47:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const path = __nccwpck_require__(17);
 const fs = __nccwpck_require__(147);
-const core = __nccwpck_require__(722);
-const markdownLinkExtractor = __nccwpck_require__(942);
+const core = __nccwpck_require__(186);
+const markdownLinkExtractor = __nccwpck_require__(264);
 
 const getAllFilePathsWithExtension = (dirPath, extension, arrayOfFilePaths) => {
   const files = fs.readdirSync(dirPath);
@@ -114,20 +114,20 @@ module.exports = {
 
 /***/ }),
 
-/***/ 338:
+/***/ 673:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const core = __nccwpck_require__(722);
+const core = __nccwpck_require__(186);
 const { 
   checkIfDirectoryExistsInRootDirectory,
   checkIfContainsReadmeInRootDirectory
-} = __nccwpck_require__(490);
+} = __nccwpck_require__(669);
 const {
   checkIfContainsChildDirectoryInParentDirectory
-} = __nccwpck_require__(123);
+} = __nccwpck_require__(411);
 const {
   checkIfLhsPagesDoNotContainReferencesToRhsPages
-} = __nccwpck_require__(831);
+} = __nccwpck_require__(47);
 
 module.exports = {
   checkIfContainsReadmeInRootDirectory: (inputPath) => {
@@ -165,11 +165,11 @@ module.exports = {
 
 /***/ }),
 
-/***/ 490:
+/***/ 669:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const fs = __nccwpck_require__(147);
-const core = __nccwpck_require__(722);
+const core = __nccwpck_require__(186);
 
 module.exports = {
   checkIfDirectoryExistsInRootDirectory: (inputPath, directoryName) => {
@@ -198,7 +198,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 140:
+/***/ 351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -225,7 +225,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.issue = exports.issueCommand = void 0;
 const os = __importStar(__nccwpck_require__(37));
-const utils_1 = __nccwpck_require__(596);
+const utils_1 = __nccwpck_require__(278);
 /**
  * Commands
  *
@@ -297,7 +297,7 @@ function escapeProperty(s) {
 
 /***/ }),
 
-/***/ 722:
+/***/ 186:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -332,12 +332,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
-const command_1 = __nccwpck_require__(140);
-const file_command_1 = __nccwpck_require__(197);
-const utils_1 = __nccwpck_require__(596);
+const command_1 = __nccwpck_require__(351);
+const file_command_1 = __nccwpck_require__(717);
+const utils_1 = __nccwpck_require__(278);
 const os = __importStar(__nccwpck_require__(37));
 const path = __importStar(__nccwpck_require__(17));
-const oidc_utils_1 = __nccwpck_require__(395);
+const oidc_utils_1 = __nccwpck_require__(41);
 /**
  * The code to exit an action
  */
@@ -616,7 +616,7 @@ exports.getIDToken = getIDToken;
 
 /***/ }),
 
-/***/ 197:
+/***/ 717:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -647,7 +647,7 @@ exports.issueCommand = void 0;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const fs = __importStar(__nccwpck_require__(147));
 const os = __importStar(__nccwpck_require__(37));
-const utils_1 = __nccwpck_require__(596);
+const utils_1 = __nccwpck_require__(278);
 function issueCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
@@ -665,7 +665,7 @@ exports.issueCommand = issueCommand;
 
 /***/ }),
 
-/***/ 395:
+/***/ 41:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -681,9 +681,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OidcClient = void 0;
-const http_client_1 = __nccwpck_require__(851);
-const auth_1 = __nccwpck_require__(417);
-const core_1 = __nccwpck_require__(722);
+const http_client_1 = __nccwpck_require__(925);
+const auth_1 = __nccwpck_require__(702);
+const core_1 = __nccwpck_require__(186);
 class OidcClient {
     static createHttpClient(allowRetry = true, maxRetry = 10) {
         const requestOptions = {
@@ -749,7 +749,7 @@ exports.OidcClient = OidcClient;
 
 /***/ }),
 
-/***/ 596:
+/***/ 278:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -796,7 +796,7 @@ exports.toCommandProperties = toCommandProperties;
 
 /***/ }),
 
-/***/ 417:
+/***/ 702:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -862,7 +862,7 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 
 /***/ }),
 
-/***/ 851:
+/***/ 925:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -870,7 +870,7 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const http = __nccwpck_require__(685);
 const https = __nccwpck_require__(687);
-const pm = __nccwpck_require__(410);
+const pm = __nccwpck_require__(443);
 let tunnel;
 var HttpCodes;
 (function (HttpCodes) {
@@ -1289,7 +1289,7 @@ class HttpClient {
         if (useProxy) {
             // If using proxy, need tunnel
             if (!tunnel) {
-                tunnel = __nccwpck_require__(866);
+                tunnel = __nccwpck_require__(294);
             }
             const agentOptions = {
                 maxSockets: maxSockets,
@@ -1407,7 +1407,7 @@ exports.HttpClient = HttpClient;
 
 /***/ }),
 
-/***/ 410:
+/***/ 443:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -1472,13 +1472,13 @@ exports.checkBypass = checkBypass;
 
 /***/ }),
 
-/***/ 942:
+/***/ 264:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-const marked = __nccwpck_require__(984);
+const marked = __nccwpck_require__(223);
 
 module.exports = function markdownLinkExtractor(markdown, extended = false) {
     const links = [];
@@ -1521,13 +1521,13 @@ module.exports = function markdownLinkExtractor(markdown, extended = false) {
 
 /***/ }),
 
-/***/ 265:
+/***/ 354:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const Tokenizer = __nccwpck_require__(268);
-const { defaults } = __nccwpck_require__(377);
-const { block, inline } = __nccwpck_require__(461);
-const { repeatString } = __nccwpck_require__(695);
+const Tokenizer = __nccwpck_require__(721);
+const { defaults } = __nccwpck_require__(863);
+const { block, inline } = __nccwpck_require__(770);
+const { repeatString } = __nccwpck_require__(881);
 
 /**
  * smartypants text replacement
@@ -2081,16 +2081,16 @@ module.exports = class Lexer {
 
 /***/ }),
 
-/***/ 284:
+/***/ 887:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const Renderer = __nccwpck_require__(2);
-const TextRenderer = __nccwpck_require__(730);
-const Slugger = __nccwpck_require__(825);
-const { defaults } = __nccwpck_require__(377);
+const Renderer = __nccwpck_require__(547);
+const TextRenderer = __nccwpck_require__(381);
+const Slugger = __nccwpck_require__(439);
+const { defaults } = __nccwpck_require__(863);
 const {
   unescape
-} = __nccwpck_require__(695);
+} = __nccwpck_require__(881);
 
 /**
  * Parsing & Compiling
@@ -2374,14 +2374,14 @@ module.exports = class Parser {
 
 /***/ }),
 
-/***/ 2:
+/***/ 547:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { defaults } = __nccwpck_require__(377);
+const { defaults } = __nccwpck_require__(863);
 const {
   cleanUrl,
   escape
-} = __nccwpck_require__(695);
+} = __nccwpck_require__(881);
 
 /**
  * Renderer
@@ -2547,7 +2547,7 @@ module.exports = class Renderer {
 
 /***/ }),
 
-/***/ 825:
+/***/ 439:
 /***/ ((module) => {
 
 /**
@@ -2603,7 +2603,7 @@ module.exports = class Slugger {
 
 /***/ }),
 
-/***/ 730:
+/***/ 381:
 /***/ ((module) => {
 
 /**
@@ -2652,16 +2652,16 @@ module.exports = class TextRenderer {
 
 /***/ }),
 
-/***/ 268:
+/***/ 721:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { defaults } = __nccwpck_require__(377);
+const { defaults } = __nccwpck_require__(863);
 const {
   rtrim,
   splitCells,
   escape,
   findClosingBracket
-} = __nccwpck_require__(695);
+} = __nccwpck_require__(881);
 
 function outputLink(cap, link, raw) {
   const href = link.href;
@@ -3390,7 +3390,7 @@ module.exports = class Tokenizer {
 
 /***/ }),
 
-/***/ 377:
+/***/ 863:
 /***/ ((module) => {
 
 function getDefaults() {
@@ -3430,7 +3430,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 695:
+/***/ 881:
 /***/ ((module) => {
 
 /**
@@ -3697,25 +3697,25 @@ module.exports = {
 
 /***/ }),
 
-/***/ 984:
+/***/ 223:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const Lexer = __nccwpck_require__(265);
-const Parser = __nccwpck_require__(284);
-const Tokenizer = __nccwpck_require__(268);
-const Renderer = __nccwpck_require__(2);
-const TextRenderer = __nccwpck_require__(730);
-const Slugger = __nccwpck_require__(825);
+const Lexer = __nccwpck_require__(354);
+const Parser = __nccwpck_require__(887);
+const Tokenizer = __nccwpck_require__(721);
+const Renderer = __nccwpck_require__(547);
+const TextRenderer = __nccwpck_require__(381);
+const Slugger = __nccwpck_require__(439);
 const {
   merge,
   checkSanitizeDeprecation,
   escape
-} = __nccwpck_require__(695);
+} = __nccwpck_require__(881);
 const {
   getDefaults,
   changeDefaults,
   defaults
-} = __nccwpck_require__(377);
+} = __nccwpck_require__(863);
 
 /**
  * Marked
@@ -4046,14 +4046,14 @@ module.exports = marked;
 
 /***/ }),
 
-/***/ 461:
+/***/ 770:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const {
   noopTest,
   edit,
   merge
-} = __nccwpck_require__(695);
+} = __nccwpck_require__(881);
 
 /**
  * Block-Level Grammar
@@ -4363,15 +4363,15 @@ module.exports = {
 
 /***/ }),
 
-/***/ 866:
+/***/ 294:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-module.exports = __nccwpck_require__(113);
+module.exports = __nccwpck_require__(219);
 
 
 /***/ }),
 
-/***/ 113:
+/***/ 219:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -4764,7 +4764,7 @@ module.exports = require("util");
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-const core = __nccwpck_require__(722);
+const core = __nccwpck_require__(186);
 const {
   checkIfContainsReadmeInRootDirectory,
   checkIfContainsCoachInRootDirectory,
@@ -4772,39 +4772,39 @@ const {
   checkIfContainsSolutionsInCoachDirectory,
   checkIfContainsResourcesInStudentDirectory,
   checkIfStudentPagesDoNotContainReferencesToCoachesPages
-} = __nccwpck_require__(338);
+} = __nccwpck_require__(673);
 
 let run = async () => {
   try {
     const inputPath = core.getInput('inputPath');
     
-    core.info(`Checking ${inputPath} for conformance to the WhatTheHack format...`)
+    core.info(`Checking ${inputPath} for conformance to the WhatTheHack format...`);
     
     //store each check function & the appropriate error message
     const testFunctions = [
       {
         function: () => checkIfContainsReadmeInRootDirectory(inputPath),
-        errorMessage: 'Does not contain a README.md file in the root directory.'
+        errorMessage: 'Must not contain a README.md file in the root directory.'
       },
       {
         function: () => checkIfContainsCoachInRootDirectory(inputPath),
-        errorMessage: 'Does not contain a Coach directory in the root directory.'
+        errorMessage: 'Must not contain a Coach directory in the root directory.'
       },
       {
         function: () => checkIfContainsStudentInRootDirectory(inputPath),
-        errorMessage: 'Does not contain a Student directory in the root directory.'
+        errorMessage: 'Must not contain a Student directory in the root directory.'
       },
       {
         function: () => checkIfContainsSolutionsInCoachDirectory(inputPath),
-        errorMessage: 'Does not contain a Solutions directory in the Coach directory.'
+        errorMessage: 'Must not contain a Solutions directory in the Coach directory.'
       },
       {
         function: () => checkIfContainsResourcesInStudentDirectory(inputPath),
-        errorMessage: 'Does not contain a Resources directory in the Student directory.'
+        errorMessage: 'Must not contain a Resources directory in the Student directory.'
       },
       {
         function: () => checkIfStudentPagesDoNotContainReferencesToCoachesPages(inputPath),
-        errorMessage: 'Does not contain references from the Student pages to the Coach pages'
+        errorMessage: 'Must not contain references from the Student pages to the Coach pages'
       }
     ];
 
@@ -4818,14 +4818,14 @@ let run = async () => {
 
     //if any of the results are false
     if (results.some(x => !x.result)) {
-      core.setFailed('Not all conditions satisfied');
-
       //print the output for each failed check
       results.forEach(x => {
         if (!x.result) {
           core.error(x.errorMessage);
         }
-      })
+      });
+
+      core.setFailed('Not all conditions satisfied');
     }
   } catch (error) {
     core.setFailed(error.message);
@@ -4839,3 +4839,4 @@ run();
 module.exports = __webpack_exports__;
 /******/ })()
 ;
+//# sourceMappingURL=index.js.map
