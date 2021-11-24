@@ -18,7 +18,7 @@ module.exports = {
     const files = fs.readdirSync(inputPath, { withFileTypes: true });
 
     return files.some((file) => {
-      if(file.isFile && file.name == 'README.md') {
+      if(file.isFile && file.name.match(/^README\.md$/i)) {
         return true;
       }
     });
