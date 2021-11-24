@@ -56,7 +56,7 @@ const checkIfContainsChildDirectoryInParentDirectory = (inputPath, parentDirecto
       elements = file.split(path.sep)
 
       if(elements.length < 2) {
-        throw new Error('Number of path {file} splits cannot be less than 2.');
+        throw new Error(`Number of path ${file} splits cannot be less than 2.`);
       }
 
       if(elements[elements.length - 2] == parentDirectoryName && elements[elements.length - 1] == childDirectoryName) {
@@ -84,13 +84,19 @@ const checkIfLhsPagesDoNotContainReferencesToRhsPages = (inputPath, lhsPageDirec
     const linksWithReferencesToRhsPages = links.filter(link => RegExp(`\.{2}\/${rhsPageDirectory}\/`).test(link.href));
 
     if(linksWithReferencesToRhsPages.length > 0) {
-      pagesWithReferencesToRhsDirectory.push(linksWithReferencesToRhsPages);
+      pagesWithReferencesToRhsDirectory.push({
+        filePath: filePath,
+        links: linksWithReferencesToRhsPages
+      });
     }
   });
 
   if(pagesWithReferencesToRhsDirectory.length > 0) {
     pagesWithReferencesToRhsDirectory.forEach(page => {
-      core.error(`The following Student page contains a reference to the Coach directory: ${page.href}`);
+      core.error(`The following Student page contains a reference to the Coach directory: ${page.filePath}`);
+      page.links.forEach(link => {
+        core.error(`  ${link.raw}`)
+      });
     });
     return false;
   } else {
