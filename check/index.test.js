@@ -4,7 +4,8 @@ const {
   checkIfContainsCoachInRootDirectory,
   checkIfContainsStudentInRootDirectory,
   checkIfContainsSolutionsInCoachDirectory,
-  checkIfContainsResourcesInStudentDirectory
+  checkIfContainsResourcesInStudentDirectory,
+  checkIfStudentPagesDoNotContainReferencesToCoachesPages
 } = require('./index');
 
 const testDir = path.join(__dirname, '../tst')
@@ -62,4 +63,15 @@ test('Student directory does contain a Resources directory', () => {
 test('Student directory must contain a Resources directory', () => {
   const inputPath = path.join(testDir, 'invalid', 'doesNotContainResourcesInStudentDirectory');
   expect(checkIfContainsResourcesInStudentDirectory(inputPath)).toBeFalsy();
+});
+
+// Student pages don't contain references to Coach files
+test('Student pages dont contain references to Coach files', () => {
+  const inputPath = path.join(testDir, 'valid');
+  expect(checkIfStudentPagesDoNotContainReferencesToCoachesPages(inputPath)).toBeTruthy();
+});
+
+test('Student pages must not contain references to Coach files', () => {
+  const inputPath = path.join(testDir, 'invalid', 'studentFilesContainLinksToCoachPages');
+  expect(checkIfStudentPagesDoNotContainReferencesToCoachesPages(inputPath)).toBeFalsy();
 });

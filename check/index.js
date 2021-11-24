@@ -1,74 +1,44 @@
-const path = require('path')
-const fs = require('fs')
-
-const getAllDirectories = (dirPath, arrayOfDirectories) => {
-  files = fs.readdirSync(dirPath);
-
-  arrayOfDirectories = arrayOfDirectories || [];
-
-  files.forEach((file) => {
-    if (fs.statSync(dirPath + "/" + file).isDirectory()) {
-      arrayOfDirectories.push(path.join(dirPath, "/", file));
-      arrayOfDirectories = getAllDirectories(dirPath + "/" + file, arrayOfDirectories);
-    }
-  });
-
-  return arrayOfDirectories;
-}
-
-const checkIfDirectoryExistsInRootDirectory = (inputPath, directoryName) => {
-  files = fs.readdirSync(inputPath, { withFileTypes: true });
-
-  return files.some((file) => {
-    if(file.isDirectory && file.name == directoryName) {
-      return true;
-    }
-  });
-}
-
-const checkIfContainsChildDirectoryInParentDirectory = (inputPath, parentDirectoryName, childDirectoryName) => {
-  arrayOfDirectories = [];
-  files = getAllDirectories(inputPath, arrayOfDirectories);
-
-  return files.some((file) => {
-    if(fs.statSync(file).isDirectory()) {
-      elements = file.split(path.sep)
-
-      if(elements.length < 2) {
-        throw new Error('Number of path {file} splits cannot be less than 2.');
-      }
-
-      if(elements[elements.length - 2] == parentDirectoryName && elements[elements.length - 1] == childDirectoryName) {
-        return true;
-      }
-    }
-  });
-}
+const core = require('@actions/core');
+const { 
+  checkIfDirectoryExistsInRootDirectory,
+  checkIfContainsReadmeInRootDirectory
+} = require('./rootDirectoryChecks');
+const {
+  checkIfContainsChildDirectoryInParentDirectory
+} = require('./childDirectoryChecks');
+const {
+  checkIfLhsPagesDoNotContainReferencesToRhsPages
+} = require('./fileChecks');
 
 module.exports = {
-checkIfContainsReadmeInRootDirectory: (inputPath) => {
-  files = fs.readdirSync(inputPath, { withFileTypes: true });
+  checkIfContainsReadmeInRootDirectory: (inputPath) => {
+    core.info(`Checking to see if README.md is in root of directory ${inputPath} ...`);
+    
+    return checkIfContainsReadmeInRootDirectory(inputPath);
+  },
 
-  return files.some((file) => {
-    if(file.isFile && file.name == 'README.md') {
-      return true;
-    }
-  });
-},
+  checkIfContainsCoachInRootDirectory: (inputPath) => {
+    core.info(`Checking to see if Coach directory in in root of directory ${inputPath} ...`);
+    return checkIfDirectoryExistsInRootDirectory(inputPath, 'Coach');
+  },
 
-checkIfContainsCoachInRootDirectory: (inputPath) => {
-  return checkIfDirectoryExistsInRootDirectory(inputPath, 'Coach')
-},
+  checkIfContainsStudentInRootDirectory: (inputPath) => {
+    core.info(`Checking to see if Student directory is in root of directory ${inputPath} ...`);
+    return checkIfDirectoryExistsInRootDirectory(inputPath, 'Student');
+  },
 
-checkIfContainsStudentInRootDirectory: (inputPath) => {
-  return checkIfDirectoryExistsInRootDirectory(inputPath, 'Student')
-},
+  checkIfContainsSolutionsInCoachDirectory: (inputPath) => {
+    core.info(`Checking to see if Solutions directory is in Coach directory of ${inputPath} ...`);
+    return checkIfContainsChildDirectoryInParentDirectory(inputPath, 'Coach', 'Solutions');
+  },
 
-checkIfContainsSolutionsInCoachDirectory: (inputPath) => {
-  return checkIfContainsChildDirectoryInParentDirectory(inputPath, 'Coach', 'Solutions')
-},
+  checkIfContainsResourcesInStudentDirectory: (inputPath) => {
+    core.info(`Checking to see if Resources directory is in Student directory of ${inputPath} ...`);
+    return checkIfContainsChildDirectoryInParentDirectory(inputPath, 'Student', 'Resources');
+  },
 
-checkIfContainsResourcesInStudentDirectory: (inputPath) => {
-  return checkIfContainsChildDirectoryInParentDirectory(inputPath, 'Student', 'Resources')
-},
+  checkIfStudentPagesDoNotContainReferencesToCoachesPages: (inputPath) => {
+    core.info(`Checking to see if any Student pages link to any Coach pages in ${inputPath} ...`);
+    return checkIfLhsPagesDoNotContainReferencesToRhsPages(inputPath, 'Student', 'Coach');
+  }
 }

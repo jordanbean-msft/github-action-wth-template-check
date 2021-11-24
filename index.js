@@ -4,13 +4,16 @@ const {
   checkIfContainsCoachInRootDirectory,
   checkIfContainsStudentInRootDirectory,
   checkIfContainsSolutionsInCoachDirectory,
-  checkIfContainsResourcesInStudentDirectory
+  checkIfContainsResourcesInStudentDirectory,
+  checkIfStudentPagesDoNotContainReferencesToCoachesPages
 } = require('./check');
 
 let run = async () => {
   try {
     const inputPath = core.getInput('inputPath');
-
+    
+    core.info(`Checking ${inputPath} for conformance to the WhatTheHack format...`)
+    
     //store each check function & the appropriate error message
     const testFunctions = [
       {
@@ -32,6 +35,10 @@ let run = async () => {
       {
         function: () => checkIfContainsResourcesInStudentDirectory(inputPath),
         errorMessage: 'Does not contain a Resources directory in the Student directory.'
+      },
+      {
+        function: () => checkIfStudentPagesDoNotContainReferencesToCoachesPages(inputPath),
+        errorMessage: 'Does not contain references from the Student pages to the Coach pages'
       }
     ];
 
@@ -45,14 +52,12 @@ let run = async () => {
 
     //if any of the results are false
     if (results.some(x => !x.result)) {
-      const errorMessage = 'Not all conditions satisfied'
-      console.log(errorMessage);
-      core.setFailed(errorMessage);
+      core.setFailed('Not all conditions satisfied');
 
       //print the output for each failed check
       results.forEach(x => {
         if (!x.result) {
-          console.log(x.errorMessage);
+          core.error(x.errorMessage);
         }
       })
     }
