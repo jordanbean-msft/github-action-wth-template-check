@@ -188,7 +188,7 @@ module.exports = {
     const files = fs.readdirSync(inputPath, { withFileTypes: true });
 
     return files.some((file) => {
-      if(file.isFile && file.name == 'README.md') {
+      if(file.isFile && file.name.match(/^README\.md$/i)) {
         return true;
       }
     });
@@ -4784,23 +4784,23 @@ let run = async () => {
     const testFunctions = [
       {
         function: () => checkIfContainsReadmeInRootDirectory(inputPath),
-        errorMessage: 'Must not contain a README.md file in the root directory.'
+        errorMessage: 'Must contain a README.md file in the root directory.'
       },
       {
         function: () => checkIfContainsCoachInRootDirectory(inputPath),
-        errorMessage: 'Must not contain a Coach directory in the root directory.'
+        errorMessage: 'Must contain a Coach directory in the root directory.'
       },
       {
         function: () => checkIfContainsStudentInRootDirectory(inputPath),
-        errorMessage: 'Must not contain a Student directory in the root directory.'
+        errorMessage: 'Must contain a Student directory in the root directory.'
       },
       {
         function: () => checkIfContainsSolutionsInCoachDirectory(inputPath),
-        errorMessage: 'Must not contain a Solutions directory in the Coach directory.'
+        errorMessage: 'Must contain a Solutions directory in the Coach directory.'
       },
       {
         function: () => checkIfContainsResourcesInStudentDirectory(inputPath),
-        errorMessage: 'Must not contain a Resources directory in the Student directory.'
+        errorMessage: 'Must contain a Resources directory in the Student directory.'
       },
       {
         function: () => checkIfStudentPagesDoNotContainReferencesToCoachesPages(inputPath),
