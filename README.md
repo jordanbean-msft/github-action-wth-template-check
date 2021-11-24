@@ -10,7 +10,7 @@ This GitHub Action takes an input directory and checks to see if it conforms to 
 
 ```yaml
 name: Template Format Check
-uses: jordanbean-msft/github-action-wth-template-check@v0.1.0
+uses: jordanbean-msft/github-action-wth-template-check@v0.2.0
 with:
   inputPath: ${{ github.workspace }}/047-Dapr
 ```
@@ -18,7 +18,7 @@ with:
 Example log output.
 
 ```
-Run jordanbean-msft/github-action-wth-template-check@v0.0.2
+Run jordanbean-msft/github-action-wth-template-check@v0.2.0
 Checking /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr for conformance to the WhatTheHack format...
 Checking to see if README.md is in root of directory /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr ...
 Checking to see if README.md is in root of directory /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr ...
