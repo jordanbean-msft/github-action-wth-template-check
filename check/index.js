@@ -38,7 +38,7 @@ const getAllDirectories = (dirPath, arrayOfDirectories) => {
 };
 
 const checkIfDirectoryExistsInRootDirectory = (inputPath, directoryName) => {
-  files = fs.readdirSync(inputPath, { withFileTypes: true });
+  const files = fs.readdirSync(inputPath, { withFileTypes: true });
 
   return files.some((file) => {
     if(file.isDirectory && file.name == directoryName) {
@@ -48,12 +48,12 @@ const checkIfDirectoryExistsInRootDirectory = (inputPath, directoryName) => {
 };
 
 const checkIfContainsChildDirectoryInParentDirectory = (inputPath, parentDirectoryName, childDirectoryName) => {
-  arrayOfDirectories = [];
-  files = getAllDirectories(inputPath, arrayOfDirectories);
+  let arrayOfDirectories = [];
+  const files = getAllDirectories(inputPath, arrayOfDirectories);
 
   return files.some((file) => {
     if(fs.statSync(file).isDirectory()) {
-      elements = file.split(path.sep)
+      const elements = file.split(path.sep)
 
       if(elements.length < 2) {
         throw new Error(`Number of path ${file} splits cannot be less than 2.`);
@@ -81,7 +81,7 @@ const checkIfLhsPagesDoNotContainReferencesToRhsPages = (inputPath, lhsPageDirec
     const links = markdownLinkExtractor(fileContent, true);
 
     //check to see if there are any references to the rhs directory (ex. ../Coach/Solution-00.md)
-    const linksWithReferencesToRhsPages = links.filter(link => RegExp(`\.{2}\/${rhsPageDirectory}\/`).test(link.href));
+    const linksWithReferencesToRhsPages = links.filter(link => RegExp(`.{2}/${rhsPageDirectory}/`).test(link.href));
 
     if(linksWithReferencesToRhsPages.length > 0) {
       pagesWithReferencesToRhsDirectory.push({
@@ -108,7 +108,7 @@ module.exports = {
 checkIfContainsReadmeInRootDirectory: (inputPath) => {
   core.info(`Checking to see if README.md is in root of directory ${inputPath} ...`)
   
-  files = fs.readdirSync(inputPath, { withFileTypes: true });
+  const files = fs.readdirSync(inputPath, { withFileTypes: true });
 
   return files.some((file) => {
     if(file.isFile && file.name == 'README.md') {
