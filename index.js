@@ -12,33 +12,33 @@ let run = async () => {
   try {
     const inputPath = core.getInput('inputPath');
     
-    core.info(`Checking ${inputPath} for conformance to the WhatTheHack format...`)
+    core.info(`Checking ${inputPath} for conformance to the WhatTheHack format...`);
     
     //store each check function & the appropriate error message
     const testFunctions = [
       {
         function: () => checkIfContainsReadmeInRootDirectory(inputPath),
-        errorMessage: 'Does not contain a README.md file in the root directory.'
+        errorMessage: 'Must not contain a README.md file in the root directory.'
       },
       {
         function: () => checkIfContainsCoachInRootDirectory(inputPath),
-        errorMessage: 'Does not contain a Coach directory in the root directory.'
+        errorMessage: 'Must not contain a Coach directory in the root directory.'
       },
       {
         function: () => checkIfContainsStudentInRootDirectory(inputPath),
-        errorMessage: 'Does not contain a Student directory in the root directory.'
+        errorMessage: 'Must not contain a Student directory in the root directory.'
       },
       {
         function: () => checkIfContainsSolutionsInCoachDirectory(inputPath),
-        errorMessage: 'Does not contain a Solutions directory in the Coach directory.'
+        errorMessage: 'Must not contain a Solutions directory in the Coach directory.'
       },
       {
         function: () => checkIfContainsResourcesInStudentDirectory(inputPath),
-        errorMessage: 'Does not contain a Resources directory in the Student directory.'
+        errorMessage: 'Must not contain a Resources directory in the Student directory.'
       },
       {
         function: () => checkIfStudentPagesDoNotContainReferencesToCoachesPages(inputPath),
-        errorMessage: 'Does not contain references from the Student pages to the Coach pages'
+        errorMessage: 'Must not contain references from the Student pages to the Coach pages'
       }
     ];
 
@@ -52,14 +52,14 @@ let run = async () => {
 
     //if any of the results are false
     if (results.some(x => !x.result)) {
-      core.setFailed('Not all conditions satisfied');
-
       //print the output for each failed check
       results.forEach(x => {
         if (!x.result) {
           core.error(x.errorMessage);
         }
-      })
+      });
+
+      core.setFailed('Not all conditions satisfied');
     }
   } catch (error) {
     core.setFailed(error.message);
