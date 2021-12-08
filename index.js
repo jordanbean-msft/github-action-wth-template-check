@@ -49,8 +49,11 @@ const getTestFunctions = (path) => {
 const run = async () => {
   try {
     const shouldScanSubdirectories = JSON.parse(core.getInput('shouldScanSubdirectories'));
+    core.debug(`Value of shouldScanSubdirectories: ${shouldScanSubdirectories}`);
     const pathToExcludePathsToNotFailOnConfigFile = core.getInput('pathToExcludePathsToNotFailOnConfigFile');
+    core.debug(`Value of pathToExcludePathsToNotFailOnConfigFile: ${pathToExcludePathsToNotFailOnConfigFile}`);
     const inputPath = core.getInput('path');
+    core.debug(`Value of path: ${inputPath}`);
 
     let paths = [];
 

@@ -39,7 +39,7 @@ const getAllFilePathsWithExtension = (dirPath, extension, arrayOfFilePaths) => {
 const getPaths = (shouldScanAllSubdirectories, inputPath) => {
   let paths = [];
   if (shouldScanAllSubdirectories) {
-    core.debug(`Testing all validly named subdirectories of ${inputPath} to see if they conform to the WhatTheHack format...`);
+    core.debug(`Getting all validly named subdirectories of ${inputPath}...`);
     //only return directories that match the 'XXX-name' format
     const wthRegex = new RegExp('\\d{3}.*$');
     paths = fs.readdirSync(inputPath, { withFileTypes: true})
