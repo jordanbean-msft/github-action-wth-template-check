@@ -7,6 +7,10 @@ const {
   checkIfContainsResourcesInStudentDirectory,
   checkIfStudentPagesDoNotContainReferencesToCoachesPages
 } = require('./index');
+const {
+  getPaths,
+  excludePathsToNotFailOn
+} = require('./utilities')
 
 const testDir = path.join(__dirname, '../tst')
 
@@ -75,3 +79,23 @@ test('Student pages must not contain references to Coach files', () => {
   const inputPath = path.join(testDir, 'invalid', 'studentFilesContainLinksToCoachPages');
   expect(checkIfStudentPagesDoNotContainReferencesToCoachesPages(inputPath)).toBeFalsy();
 });
+
+// Utilties tests
+test('Paths should only include single directory', () => {
+  const inputPath = path.join(testDir, '000-valid');
+  expect(getPaths(false, inputPath)).toEqual([inputPath]);
+})
+
+test('Paths should contain all valid subdirectories', () => {
+  const validInputPath0 = path.join(testDir, '000-valid');
+  const validInputPath1 = path.join(testDir, '001-valid');
+  expect(getPaths(true, testDir)).toEqual([validInputPath0, validInputPath1]);
+})
+
+test('Paths should exclude directories specified in ignore file', () => {
+  const validInputPath0 = path.join(testDir, '000-valid');
+  const validInputPath1 = path.join(testDir, '001-valid');
+  const paths = [validInputPath0, validInputPath1];
+  const directoriesToExclude = ['001-valid'];
+  expect(excludePathsToNotFailOn(paths, directoriesToExclude)).toEqual([validInputPath0]);
+})

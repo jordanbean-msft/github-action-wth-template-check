@@ -10,8 +10,9 @@ const {
   checkIfStudentPagesDoNotContainReferencesToCoachesPages
 } = require('./check');
 const {
-  getAllDirectories
-} = require('./check/utilities');
+  getPaths,
+  excludePathsToNotFailOn
+} = require('./check/utilities')
 
 const getTestFunctions = (path) => {
   //store each check function & the appropriate error message
@@ -45,39 +46,17 @@ const getTestFunctions = (path) => {
   return testFunctions;
 }
 
-const getPaths = (shouldScanAllSubdirectories, inputPath) => {
-  let paths = [];
-  if (shouldScanAllSubdirectories) {
-    core.debug(`Testing all validly named subdirectories of ${inputPath} to see if they conform to the WhatTheHack format...`);
-    //only return directories that match the 'XXX-name' format
-    const wthRegex = new RegExp('\\d{3}.*$');
-    paths = fs.readdirSync(inputPath, { withFileTypes: true})
-              .filter(directory => directory.isDirectory && wthRegex.test(directory.name))
-              .map(directory => path.join(inputPath, directory.name));
-  } else {
-    paths.push(inputPath);
-  }
-  return paths;
-}
-
-const excludePathsToNotFailOn = (originalPaths, directoriesToNotFailOn) => {
-  let newPaths = originalPaths;
-
-  return newPaths;
-}
-
 const run = async () => {
   try {
     const shouldScanAllSubdirectories = JSON.parse(core.getInput('shouldScanAllSubdirectories'));
-    const shouldExcludePathsToNotFailOn = JSON.parse(core.getInput('shouldExcludePathsToNotFailOn'));
     const pathToExcludePathsToNotFailOnConfigFile = core.getInput('pathToExcludePathsToNotFailOnConfigFile');
-    const path = core.getInput('path');
+    const inputPath = core.getInput('path');
 
     let paths = [];
 
-    paths = getPaths(shouldScanAllSubdirectories, path);
+    paths = getPaths(shouldScanAllSubdirectories, inputPath);
 
-    if(shouldExcludePathsToNotFailOn) {
+    if(pathToExcludePathsToNotFailOnConfigFile) {
       let pathsToNotFailOn = []
       pathsToNotFailOn = JSON.parse(fs.readFileSync(path.join(__dirname, pathToExcludePathsToNotFailOnConfigFile)));
       paths = excludePathsToNotFailOn(paths, pathsToNotFailOn.directoriesToNotFailOn);
@@ -125,7 +104,6 @@ const run = async () => {
 run();
 
 module.exports = {
-  run: run,
   getPaths: getPaths,
   excludePathsToNotFailOn: excludePathsToNotFailOn
 }

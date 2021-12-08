@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const core = require('@actions/core');
 
 const getAllDirectories = (dirPath, arrayOfDirectories) => {
   const files = fs.readdirSync(dirPath);
@@ -35,7 +36,33 @@ const getAllFilePathsWithExtension = (dirPath, extension, arrayOfFilePaths) => {
   return arrayOfFilePaths;
 };
 
+const getPaths = (shouldScanAllSubdirectories, inputPath) => {
+  let paths = [];
+  if (shouldScanAllSubdirectories) {
+    core.debug(`Testing all validly named subdirectories of ${inputPath} to see if they conform to the WhatTheHack format...`);
+    //only return directories that match the 'XXX-name' format
+    const wthRegex = new RegExp('\\d{3}.*$');
+    paths = fs.readdirSync(inputPath, { withFileTypes: true})
+              .filter(directory => directory.isDirectory && wthRegex.test(directory.name))
+              .map(directory => path.join(inputPath, directory.name));
+  } else {
+    paths.push(inputPath);
+  }
+  return paths;
+};
+
+const excludePathsToNotFailOn = (originalPaths, directoriesToNotFailOn) => {
+  const newPaths = originalPaths.filter(originalPath => !directoriesToNotFailOn
+                                                          .includes(originalPath
+                                                                      .split(path.sep)
+                                                                      .slice(-1)[0]));
+
+  return newPaths;
+};
+
 module.exports = {
   getAllDirectories: getAllDirectories,
-  getAllFilePathsWithExtension: getAllFilePathsWithExtension
+  getAllFilePathsWithExtension: getAllFilePathsWithExtension,
+  getPaths: getPaths,
+  excludePathsToNotFailOn: excludePathsToNotFailOn
 }
