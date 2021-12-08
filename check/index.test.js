@@ -12,7 +12,7 @@ const testDir = path.join(__dirname, '../tst')
 
 // README tests
 test('Root directory does contain a README.md', () => {
-  const inputPath = path.join(testDir, 'valid');
+  const inputPath = path.join(testDir, '000-valid');
   expect(checkIfContainsReadmeInRootDirectory(inputPath)).toBeTruthy();
 });
 
@@ -23,7 +23,7 @@ test('Root directory must contain a README.md', () => {
 
 // Coach tests
 test('Root directory does contain a Coach directory', () => {
-  const inputPath = path.join(testDir, 'valid');
+  const inputPath = path.join(testDir, '000-valid');
   expect(checkIfContainsCoachInRootDirectory(inputPath)).toBeTruthy();
 });
 
@@ -34,7 +34,7 @@ test('Root directory must contain a Coach directory', () => {
 
 // Student tests
 test('Root directory does contain a Student directory', () => {
-  const inputPath = path.join(testDir, 'valid');
+  const inputPath = path.join(testDir, '000-valid');
   expect(checkIfContainsStudentInRootDirectory(inputPath)).toBeTruthy();
 });
 
@@ -45,7 +45,7 @@ test('Root directory must contain a Student directory', () => {
 
 // Coach/Solution tests
 test('Coach directory does contain a Solutions directory', () => {
-  const inputPath = path.join(testDir, 'valid');
+  const inputPath = path.join(testDir, '000-valid');
   expect(checkIfContainsSolutionsInCoachDirectory(inputPath)).toBeTruthy();
 });
 
@@ -56,7 +56,7 @@ test('Coach directory must contain a Solutions directory', () => {
 
 // Student/Solution tests
 test('Student directory does contain a Resources directory', () => {
-  const inputPath = path.join(testDir, 'valid');
+  const inputPath = path.join(testDir, '000-valid');
   expect(checkIfContainsResourcesInStudentDirectory(inputPath)).toBeTruthy();
 });
 
@@ -67,7 +67,7 @@ test('Student directory must contain a Resources directory', () => {
 
 // Student pages don't contain references to Coach files
 test('Student pages dont contain references to Coach files', () => {
-  const inputPath = path.join(testDir, 'valid');
+  const inputPath = path.join(testDir, '000-valid');
   expect(checkIfStudentPagesDoNotContainReferencesToCoachesPages(inputPath)).toBeTruthy();
 });
 

@@ -1,23 +1,13 @@
 const path = require('path');
 const fs = require('fs');
-
-const getAllDirectories = (dirPath, arrayOfDirectories) => {
-  const files = fs.readdirSync(dirPath);
-
-  arrayOfDirectories = arrayOfDirectories || [];
-
-  files.forEach((file) => {
-    if (fs.statSync(dirPath + "/" + file).isDirectory()) {
-      arrayOfDirectories.push(path.join(dirPath, "/", file));
-      arrayOfDirectories = getAllDirectories(dirPath + "/" + file, arrayOfDirectories);
-    }
-  });
-
-  return arrayOfDirectories;
-};
+const {
+  getAllDirectories
+} = require('./utilities');
+const core = require('@actions/core');
 
 module.exports = {
   checkIfContainsChildDirectoryInParentDirectory: (inputPath, parentDirectoryName, childDirectoryName) => {
+    core.debug(`Checking if ${inputPath} contains a parent directory ${parentDirectoryName} with a child directory ${childDirectoryName}...`)
     let arrayOfDirectories = [];
     const files = getAllDirectories(inputPath, arrayOfDirectories);
 

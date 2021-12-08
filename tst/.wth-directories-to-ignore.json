@@ -1,0 +1,5 @@
+{
+  "directoriesToNotFailOn": [
+    "invalid/doesNotContainReadme"
+  ]
+}
