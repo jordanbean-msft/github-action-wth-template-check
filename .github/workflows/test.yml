@@ -22,4 +22,4 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ./
       with:
-        inputPath: ${{ github.workspace }}/tst/valid
+        path: ${{ github.workspace }}/tst/000-valid
