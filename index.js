@@ -48,7 +48,7 @@ const getTestFunctions = (path) => {
 
 const run = async () => {
   try {
-    const shouldScanAllSubdirectories = JSON.parse(core.getInput('shouldScanAllSubdirectories'));
+    const shouldScanAllSubdirectories = JSON.parse(core.getInput('shouldScanSubdirectories'));
     const pathToExcludePathsToNotFailOnConfigFile = core.getInput('pathToExcludePathsToNotFailOnConfigFile');
     const inputPath = core.getInput('path');
 
@@ -58,8 +58,8 @@ const run = async () => {
 
     if(pathToExcludePathsToNotFailOnConfigFile) {
       let pathsToNotFailOn = []
-      pathsToNotFailOn = JSON.parse(fs.readFileSync(path.join(__dirname, pathToExcludePathsToNotFailOnConfigFile)));
-      paths = excludePathsToNotFailOn(paths, pathsToNotFailOn.directoriesToNotFailOn);
+      pathsToNotFailOn = fs.readFileSync(path.join(__dirname, pathToExcludePathsToNotFailOnConfigFile), 'utf-8').split("\n");
+      paths = excludePathsToNotFailOn(paths, pathsToNotFailOn);
     }
 
     let aggregateResults = [];
@@ -102,10 +102,3 @@ const run = async () => {
 }
 
 run();
-
-module.exports = {
-  getPaths: getPaths,
-  excludePathsToNotFailOn: excludePathsToNotFailOn
-}
-
-
