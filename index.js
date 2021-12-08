@@ -48,13 +48,13 @@ const getTestFunctions = (path) => {
 
 const run = async () => {
   try {
-    const shouldScanAllSubdirectories = JSON.parse(core.getInput('shouldScanSubdirectories'));
+    const shouldScanSubdirectories = JSON.parse(core.getInput('shouldScanSubdirectories'));
     const pathToExcludePathsToNotFailOnConfigFile = core.getInput('pathToExcludePathsToNotFailOnConfigFile');
     const inputPath = core.getInput('path');
 
     let paths = [];
 
-    paths = getPaths(shouldScanAllSubdirectories, inputPath);
+    paths = getPaths(shouldScanSubdirectories, inputPath);
 
     if(pathToExcludePathsToNotFailOnConfigFile) {
       let pathsToNotFailOn = []
