@@ -6,24 +6,14 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 const path = __nccwpck_require__(17);
 const fs = __nccwpck_require__(147);
-
-const getAllDirectories = (dirPath, arrayOfDirectories) => {
-  const files = fs.readdirSync(dirPath);
-
-  arrayOfDirectories = arrayOfDirectories || [];
-
-  files.forEach((file) => {
-    if (fs.statSync(dirPath + "/" + file).isDirectory()) {
-      arrayOfDirectories.push(path.join(dirPath, "/", file));
-      arrayOfDirectories = getAllDirectories(dirPath + "/" + file, arrayOfDirectories);
-    }
-  });
-
-  return arrayOfDirectories;
-};
+const {
+  getAllDirectories
+} = __nccwpck_require__(738);
+const core = __nccwpck_require__(186);
 
 module.exports = {
   checkIfContainsChildDirectoryInParentDirectory: (inputPath, parentDirectoryName, childDirectoryName) => {
+    core.debug(`Checking if ${inputPath} contains a parent directory ${parentDirectoryName} with a child directory ${childDirectoryName}...`)
     let arrayOfDirectories = [];
     const files = getAllDirectories(inputPath, arrayOfDirectories);
 
@@ -52,28 +42,13 @@ const path = __nccwpck_require__(17);
 const fs = __nccwpck_require__(147);
 const core = __nccwpck_require__(186);
 const markdownLinkExtractor = __nccwpck_require__(264);
-
-const getAllFilePathsWithExtension = (dirPath, extension, arrayOfFilePaths) => {
-  const files = fs.readdirSync(dirPath);
-
-  arrayOfFilePaths = arrayOfFilePaths || [];
-
-  files.forEach((file) => {
-    if (fs.statSync(dirPath + "/" + file).isDirectory()) {
-      arrayOfFilePaths = getAllFilePathsWithExtension(dirPath + "/" + file, extension, arrayOfFilePaths);
-    } else {
-      //if the file has the required extension
-      if(file.slice((file.lastIndexOf(".") - 1 >>> 0) + 2).localeCompare(extension) === 0) {
-        arrayOfFilePaths.push(path.join(dirPath, "/", file));
-      }
-    }
-  });
-
-  return arrayOfFilePaths;
-};
+const {
+  getAllFilePathsWithExtension
+} = __nccwpck_require__(738)
 
 module.exports = {
   checkIfLhsPagesDoNotContainReferencesToRhsPages: (inputPath, lhsPageDirectory, rhsPageDirectory) => {
+    core.debug(`Checking if ${lhsPageDirectory} contains a reference to the ${rhsPageDirectory} in the ${inputPath} directory...`)
     const markdownFilePaths = getAllFilePathsWithExtension(inputPath, 'md');
     const lhsPageDirectoryPath = path.join(inputPath, lhsPageDirectory);
 
@@ -132,7 +107,6 @@ const {
 module.exports = {
   checkIfContainsReadmeInRootDirectory: (inputPath) => {
     core.info(`Checking to see if README.md is in root of directory ${inputPath} ...`);
-    
     return checkIfContainsReadmeInRootDirectory(inputPath);
   },
 
@@ -173,6 +147,7 @@ const core = __nccwpck_require__(186);
 
 module.exports = {
   checkIfDirectoryExistsInRootDirectory: (inputPath, directoryName) => {
+    core.debug(`Checking if the ${inputPath} contains a ${directoryName} in the root directory...`)
     const files = fs.readdirSync(inputPath, { withFileTypes: true });
 
     return files.some((file) => {
@@ -183,8 +158,7 @@ module.exports = {
   },
 
   checkIfContainsReadmeInRootDirectory: (inputPath) => {
-    core.info(`Checking to see if README.md is in root of directory ${inputPath} ...`)
-    
+    core.debug(`Checking if the ${inputPath} contains a README.md file in the root directory...`)
     const files = fs.readdirSync(inputPath, { withFileTypes: true });
 
     return files.some((file) => {
@@ -193,6 +167,81 @@ module.exports = {
       }
     });
   }
+}
+
+
+/***/ }),
+
+/***/ 738:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const path = __nccwpck_require__(17);
+const fs = __nccwpck_require__(147);
+const core = __nccwpck_require__(186);
+
+const getAllDirectories = (dirPath, arrayOfDirectories) => {
+  const files = fs.readdirSync(dirPath);
+
+  arrayOfDirectories = arrayOfDirectories || [];
+
+  files.forEach((file) => {
+    if (fs.statSync(dirPath + "/" + file).isDirectory()) {
+      arrayOfDirectories.push(path.join(dirPath, "/", file));
+      arrayOfDirectories = getAllDirectories(dirPath + "/" + file, arrayOfDirectories);
+    }
+  });
+
+  return arrayOfDirectories;
+};
+
+const getAllFilePathsWithExtension = (dirPath, extension, arrayOfFilePaths) => {
+  const files = fs.readdirSync(dirPath);
+
+  arrayOfFilePaths = arrayOfFilePaths || [];
+
+  files.forEach((file) => {
+    if (fs.statSync(dirPath + "/" + file).isDirectory()) {
+      arrayOfFilePaths = getAllFilePathsWithExtension(dirPath + "/" + file, extension, arrayOfFilePaths);
+    } else {
+      //if the file has the required extension
+      if(file.slice((file.lastIndexOf(".") - 1 >>> 0) + 2).localeCompare(extension) === 0) {
+        arrayOfFilePaths.push(path.join(dirPath, "/", file));
+      }
+    }
+  });
+
+  return arrayOfFilePaths;
+};
+
+const getPaths = (shouldScanAllSubdirectories, inputPath) => {
+  let paths = [];
+  if (shouldScanAllSubdirectories) {
+    core.debug(`Getting all validly named subdirectories of ${inputPath}...`);
+    //only return directories that match the 'XXX-name' format
+    const wthRegex = new RegExp('\\d{3}.*$');
+    paths = fs.readdirSync(inputPath, { withFileTypes: true})
+              .filter(directory => directory.isDirectory && wthRegex.test(directory.name))
+              .map(directory => path.join(inputPath, directory.name));
+  } else {
+    paths.push(inputPath);
+  }
+  return paths;
+};
+
+const excludePathsToNotFailOn = (originalPaths, directoriesToNotFailOn) => {
+  const newPaths = originalPaths.filter(originalPath => !directoriesToNotFailOn
+                                                          .includes(originalPath
+                                                                      .split(path.sep)
+                                                                      .slice(-1)[0]));
+
+  return newPaths;
+};
+
+module.exports = {
+  getAllDirectories: getAllDirectories,
+  getAllFilePathsWithExtension: getAllFilePathsWithExtension,
+  getPaths: getPaths,
+  excludePathsToNotFailOn: excludePathsToNotFailOn
 }
 
 
@@ -4765,6 +4814,8 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 const core = __nccwpck_require__(186);
+const fs = __nccwpck_require__(147);
+const path = __nccwpck_require__(17);
 const {
   checkIfContainsReadmeInRootDirectory,
   checkIfContainsCoachInRootDirectory,
@@ -4773,58 +4824,94 @@ const {
   checkIfContainsResourcesInStudentDirectory,
   checkIfStudentPagesDoNotContainReferencesToCoachesPages
 } = __nccwpck_require__(673);
+const {
+  getPaths,
+  excludePathsToNotFailOn
+} = __nccwpck_require__(738)
 
-let run = async () => {
+const getTestFunctions = (path) => {
+  //store each check function & the appropriate error message
+  const testFunctions = [
+    {
+      function: () => checkIfContainsReadmeInRootDirectory(path),
+      errorMessage: 'Must contain a README.md file in the root directory.'
+    },
+    {
+      function: () => checkIfContainsCoachInRootDirectory(path),
+      errorMessage: 'Must contain a Coach directory in the root directory.'
+    },
+    {
+      function: () => checkIfContainsStudentInRootDirectory(path),
+      errorMessage: 'Must contain a Student directory in the root directory.'
+    },
+    {
+      function: () => checkIfContainsSolutionsInCoachDirectory(path),
+      errorMessage: 'Must contain a Solutions directory in the Coach directory.'
+    },
+    {
+      function: () => checkIfContainsResourcesInStudentDirectory(path),
+      errorMessage: 'Must contain a Resources directory in the Student directory.'
+    },
+    {
+      function: () => checkIfStudentPagesDoNotContainReferencesToCoachesPages(path),
+      errorMessage: 'Must not contain references from the Student pages to the Coach pages'
+    }
+  ];
+
+  return testFunctions;
+}
+
+const run = async () => {
   try {
-    const inputPath = core.getInput('inputPath');
-    
-    core.info(`Checking ${inputPath} for conformance to the WhatTheHack format...`);
-    
-    //store each check function & the appropriate error message
-    const testFunctions = [
-      {
-        function: () => checkIfContainsReadmeInRootDirectory(inputPath),
-        errorMessage: 'Must contain a README.md file in the root directory.'
-      },
-      {
-        function: () => checkIfContainsCoachInRootDirectory(inputPath),
-        errorMessage: 'Must contain a Coach directory in the root directory.'
-      },
-      {
-        function: () => checkIfContainsStudentInRootDirectory(inputPath),
-        errorMessage: 'Must contain a Student directory in the root directory.'
-      },
-      {
-        function: () => checkIfContainsSolutionsInCoachDirectory(inputPath),
-        errorMessage: 'Must contain a Solutions directory in the Coach directory.'
-      },
-      {
-        function: () => checkIfContainsResourcesInStudentDirectory(inputPath),
-        errorMessage: 'Must contain a Resources directory in the Student directory.'
-      },
-      {
-        function: () => checkIfStudentPagesDoNotContainReferencesToCoachesPages(inputPath),
-        errorMessage: 'Must not contain references from the Student pages to the Coach pages'
-      }
-    ];
+    const shouldScanSubdirectories = JSON.parse(core.getInput('shouldScanSubdirectories'));
+    core.debug(`Value of shouldScanSubdirectories: ${shouldScanSubdirectories}`);
+    const pathToExcludePathsToNotFailOnConfigFile = core.getInput('pathToExcludePathsToNotFailOnConfigFile');
+    core.debug(`Value of pathToExcludePathsToNotFailOnConfigFile: ${pathToExcludePathsToNotFailOnConfigFile}`);
+    const inputPath = core.getInput('path');
+    core.debug(`Value of path: ${inputPath}`);
 
-    //execute all check functions and store results
-    const results = testFunctions.map(x => (
-      {
-        result: x.function(),
-        errorMessage: x.errorMessage
-      }
-    ));
+    let paths = [];
 
-    //if any of the results are false
-    if (results.some(x => !x.result)) {
-      //print the output for each failed check
-      results.forEach(x => {
-        if (!x.result) {
-          core.error(x.errorMessage);
+    paths = getPaths(shouldScanSubdirectories, inputPath);
+
+    if(pathToExcludePathsToNotFailOnConfigFile) {
+      let pathsToNotFailOn = []
+      pathsToNotFailOn = fs.readFileSync(path.join(__dirname, pathToExcludePathsToNotFailOnConfigFile), 'utf-8').split("\n");
+      paths = excludePathsToNotFailOn(paths, pathsToNotFailOn);
+    }
+
+    let aggregateResults = [];
+
+    paths.forEach(path => {
+      core.info(`Checking ${path} for conformance to the WhatTheHack format...`);
+
+      const testFunctions = getTestFunctions(path);
+
+      //execute all check functions and store results
+      const individualResults = testFunctions.map(x => (
+        {
+          result: x.function(),
+          errorMessage: x.errorMessage
         }
-      });
+      ));
 
+      //if any of the results are false
+      if (individualResults.some(x => !x.result)) {
+        //print the output for each failed check
+        individualResults.forEach(x => {
+          if (!x.result) {
+            core.error(x.errorMessage);
+          }
+        });
+        
+        aggregateResults.push({
+          path: path,
+          result: false
+        });
+      }
+    });
+    
+    if(aggregateResults.some(x => !x.result)) {
       core.setFailed('Not all conditions satisfied');
     }
   } catch (error) {
