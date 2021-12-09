@@ -3,6 +3,7 @@ const core = require('@actions/core');
 
 module.exports = {
   checkIfDirectoryExistsInRootDirectory: (inputPath, directoryName) => {
+    core.debug(`Checking if the ${inputPath} contains a ${directoryName} in the root directory...`)
     const files = fs.readdirSync(inputPath, { withFileTypes: true });
 
     return files.some((file) => {
@@ -13,8 +14,7 @@ module.exports = {
   },
 
   checkIfContainsReadmeInRootDirectory: (inputPath) => {
-    core.info(`Checking to see if README.md is in root of directory ${inputPath} ...`)
-    
+    core.debug(`Checking if the ${inputPath} contains a README.md file in the root directory...`)
     const files = fs.readdirSync(inputPath, { withFileTypes: true });
 
     return files.some((file) => {

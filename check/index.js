@@ -13,7 +13,6 @@ const {
 module.exports = {
   checkIfContainsReadmeInRootDirectory: (inputPath) => {
     core.info(`Checking to see if README.md is in root of directory ${inputPath} ...`);
-    
     return checkIfContainsReadmeInRootDirectory(inputPath);
   },
 

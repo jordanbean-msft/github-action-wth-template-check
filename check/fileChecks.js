@@ -2,28 +2,13 @@ const path = require('path');
 const fs = require('fs');
 const core = require('@actions/core');
 const markdownLinkExtractor = require('markdown-link-extractor');
-
-const getAllFilePathsWithExtension = (dirPath, extension, arrayOfFilePaths) => {
-  const files = fs.readdirSync(dirPath);
-
-  arrayOfFilePaths = arrayOfFilePaths || [];
-
-  files.forEach((file) => {
-    if (fs.statSync(dirPath + "/" + file).isDirectory()) {
-      arrayOfFilePaths = getAllFilePathsWithExtension(dirPath + "/" + file, extension, arrayOfFilePaths);
-    } else {
-      //if the file has the required extension
-      if(file.slice((file.lastIndexOf(".") - 1 >>> 0) + 2).localeCompare(extension) === 0) {
-        arrayOfFilePaths.push(path.join(dirPath, "/", file));
-      }
-    }
-  });
-
-  return arrayOfFilePaths;
-};
+const {
+  getAllFilePathsWithExtension
+} = require('./utilities')
 
 module.exports = {
   checkIfLhsPagesDoNotContainReferencesToRhsPages: (inputPath, lhsPageDirectory, rhsPageDirectory) => {
+    core.debug(`Checking if ${lhsPageDirectory} contains a reference to the ${rhsPageDirectory} in the ${inputPath} directory...`)
     const markdownFilePaths = getAllFilePathsWithExtension(inputPath, 'md');
     const lhsPageDirectoryPath = path.join(inputPath, lhsPageDirectory);
 

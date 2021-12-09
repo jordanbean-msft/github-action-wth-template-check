@@ -1,9 +1,17 @@
-name: 'WhatTheHack Template Check'
-description: 'Validate a given directory matches the WhatTheHack format'
+name: WhatTheHack Template Check
+description: Validate a given directory matches the WhatTheHack format
 inputs:
-  inputPath:  
-    description: 'Path to the directory to check for validity'
+  path:  
+    description: Path to the directory to check for validity
     required: true
+  shouldScanSubdirectories:
+    description: Will scan one level down subdirectories of the 'path'. Assumes that valid WTH subdirectories follow the naming convention 'XXX-name'.
+    required: false
+    default: false
+  pathToExcludePathsToNotFailOnConfigFile:
+    description: Indicates path to a configuration file with a list of directories to ignore (relative to the root of the 'path' parameter)
+    required: false
+    default: ''
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: node12
+  main: dist/index.js
