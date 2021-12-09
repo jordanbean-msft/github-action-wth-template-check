@@ -8,6 +8,7 @@ This GitHub Action takes an input directory and checks to see if it conforms to 
 
 ## Usage
 
+**Run on just one directory**
 ```yaml
 name: Template Format Check
 uses: jordanbean-msft/github-action-wth-template-check@v0.3.1
