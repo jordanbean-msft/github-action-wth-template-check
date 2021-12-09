@@ -17,7 +17,7 @@ module.exports = {
   },
 
   checkIfContainsCoachInRootDirectory: (inputPath) => {
-    core.info(`Checking to see if Coach directory in in root of directory ${inputPath} ...`);
+    core.info(`Checking to see if Coach directory is in root of directory ${inputPath} ...`);
     return checkIfDirectoryExistsInRootDirectory(inputPath, 'Coach');
   },
 

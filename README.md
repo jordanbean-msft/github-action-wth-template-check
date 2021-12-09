@@ -8,11 +8,22 @@ This GitHub Action takes an input directory and checks to see if it conforms to 
 
 ## Usage
 
+**Run on just one directory**
 ```yaml
 name: Template Format Check
 uses: jordanbean-msft/github-action-wth-template-check@v0.2.0
 with:
-  inputPath: ${{ github.workspace }}/047-Dapr
+  path: ${{ github.workspace }}/047-Dapr
+```
+
+**Run on entire WTH repo**
+```yaml
+name: Template Format Check
+uses: jordanbean-msft/github-action-wth-template-check@v0.2.0
+with:
+  path: ${{ github.workspace }}
+  shouldScanSubdirectories: true
+  pathToExcludePathsToNotFailOnConfigFile: ${{ github.workspace }}/.github/workflows/.excludePathsToNotFailOnConfigFile.txt
 ```
 
 Example log output.
