@@ -61,7 +61,7 @@ const run = async () => {
 
     if(pathToExcludePathsToNotFailOnConfigFile) {
       let pathsToNotFailOn = []
-      pathsToNotFailOn = fs.readFileSync(path.join(__dirname, pathToExcludePathsToNotFailOnConfigFile), 'utf-8').split("\n");
+      pathsToNotFailOn = fs.readFileSync(pathToExcludePathsToNotFailOnConfigFile, 'utf-8').split("\n");
       paths = excludePathsToNotFailOn(paths, pathsToNotFailOn);
     }
 
