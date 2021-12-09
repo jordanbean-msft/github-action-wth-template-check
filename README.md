@@ -10,15 +10,26 @@ This GitHub Action takes an input directory and checks to see if it conforms to 
 
 ```yaml
 name: Template Format Check
-uses: jordanbean-msft/github-action-wth-template-check@v0.2.0
+uses: jordanbean-msft/github-action-wth-template-check@v0.3.1
 with:
   inputPath: ${{ github.workspace }}/047-Dapr
+  path: ${{ github.workspace }}/047-Dapr
+```
+
+**Run on entire WTH repo**
+```yaml
+name: Template Format Check
+uses: jordanbean-msft/github-action-wth-template-check@v0.3.1
+with:
+  path: ${{ github.workspace }}
+  shouldScanSubdirectories: true
+  pathToExcludePathsToNotFailOnConfigFile: ${{ github.workspace }}/.github/workflows/.excludePathsToNotFailOnConfigFile.txt
 ```
 
 Example log output.
 
 ```
-Run jordanbean-msft/github-action-wth-template-check@v0.2.0
+Run jordanbean-msft/github-action-wth-template-check@v0.3.1
 Checking /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr for conformance to the WhatTheHack format...
 Checking to see if README.md is in root of directory /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr ...
 Checking to see if Coach directory in in root of directory /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr ...
