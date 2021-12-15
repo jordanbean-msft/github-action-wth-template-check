@@ -8,7 +8,7 @@ inputs:
     description: Will scan one level down subdirectories of the 'path'. Assumes that valid WTH subdirectories follow the naming convention 'XXX-name'.
     required: false
     default: false
-  pathToExcludePathsToNotFailOnConfigFile:
+  pathToIgnoreFile:
     description: Indicates path to a configuration file with a list of directories to ignore (relative to the root of the 'path' parameter)
     required: false
     default: ''
