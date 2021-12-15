@@ -50,8 +50,8 @@ const run = async () => {
   try {
     const shouldScanSubdirectories = JSON.parse(core.getInput('shouldScanSubdirectories'));
     core.debug(`Value of shouldScanSubdirectories: ${shouldScanSubdirectories}`);
-    const pathToExcludePathsToNotFailOnConfigFile = core.getInput('pathToExcludePathsToNotFailOnConfigFile');
-    core.debug(`Value of pathToExcludePathsToNotFailOnConfigFile: ${pathToExcludePathsToNotFailOnConfigFile}`);
+    const pathToIgnoreFile = core.getInput('pathToIgnoreFile');
+    core.debug(`Value of pathToIgnoreFile: ${pathToIgnoreFile}`);
     const inputPath = core.getInput('path');
     core.debug(`Value of path: ${inputPath}`);
 
@@ -59,9 +59,9 @@ const run = async () => {
 
     paths = getPaths(shouldScanSubdirectories, inputPath);
 
-    if(pathToExcludePathsToNotFailOnConfigFile) {
+    if(pathToIgnoreFile) {
       let pathsToNotFailOn = []
-      pathsToNotFailOn = fs.readFileSync(pathToExcludePathsToNotFailOnConfigFile, 'utf-8').split("\n");
+      pathsToNotFailOn = fs.readFileSync(pathToIgnoreFile, 'utf-8').split("\n");
       paths = excludePathsToNotFailOn(paths, pathsToNotFailOn);
     }
 

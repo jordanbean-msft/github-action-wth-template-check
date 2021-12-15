@@ -11,7 +11,7 @@ This GitHub Action takes an input directory and checks to see if it conforms to 
 **Run on just one directory**
 ```yaml
 name: Template Format Check
-uses: jordanbean-msft/github-action-wth-template-check@v0.3.1
+uses: jordanbean-msft/github-action-wth-template-check@v0.4.0
 with:
   inputPath: ${{ github.workspace }}/047-Dapr
   path: ${{ github.workspace }}/047-Dapr
@@ -20,20 +20,20 @@ with:
 **Run on entire WTH repo**
 ```yaml
 name: Template Format Check
-uses: jordanbean-msft/github-action-wth-template-check@v0.3.1
+uses: jordanbean-msft/github-action-wth-template-check@v0.4.0
 with:
   path: ${{ github.workspace }}
   shouldScanSubdirectories: true
-  pathToExcludePathsToNotFailOnConfigFile: ${{ github.workspace }}/.github/workflows/.excludePathsToNotFailOnConfigFile.txt
+  pathToIgnoreFile: ${{ github.workspace }}/.github/workflows/.pathToIgnoreFile
 ```
 
-Example log output.
+Example log output for a single WTH directory.
 
 ```
 Run jordanbean-msft/github-action-wth-template-check@v0.3.1
 Checking /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr for conformance to the WhatTheHack format...
 Checking to see if README.md is in root of directory /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr ...
-Checking to see if Coach directory in in root of directory /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr ...
+Checking to see if Coach directory is in root of directory /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr ...
 Checking to see if Student directory is in root of directory /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr ...
 Checking to see if Solutions directory is in Coach directory of /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr ...
 Checking to see if Resources directory is in Student directory of /home/runner/work/WhatTheHack/WhatTheHack/047-Dapr ...
