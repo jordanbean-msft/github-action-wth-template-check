@@ -13,7 +13,6 @@ This GitHub Action takes an input directory and checks to see if it conforms to 
 name: Template Format Check
 uses: jordanbean-msft/github-action-wth-template-check@v0.4.0
 with:
-  inputPath: ${{ github.workspace }}/047-Dapr
   path: ${{ github.workspace }}/047-Dapr
 ```
 
